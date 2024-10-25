@@ -60,6 +60,17 @@ app.post ('/signup', async (req, res) => {
     }
 })
 
+app.post ('/login', async (req, res) => {
+    const login = req.body.login
+    const password = req.body.password
+    // verifica se o usuário existe
+    const usuarioExiste = await Usuario.findOne({login: login})
+    if (!usuarioExiste) {
+        return res.status(401).json({mensagem: "login inválido"})
+    }
+    //verificar senha e da continuidade
+})
+
 app.listen (3000, () => {
     try{
         conectarAoMongo()
