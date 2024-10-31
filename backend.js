@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const app = express()
 const uniqueValidator = require('mongoose-unique-validator')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 app.use(express.json())
 app.use(cors())
 
@@ -69,6 +70,16 @@ app.post ('/login', async (req, res) => {
         return res.status(401).json({mensagem: "login inválido"})
     }
     //verificar senha e da continuidade
+    const senhaValida = await bcrypt.compare (password, usuarioExiste.password)
+    if (!senhaValida) {
+        return res.status(401).json({mensagem: "senha inválida"})
+    }
+    const token = jwt.sign (
+        {login: login},
+        "id-secreto",
+        {expiresIn: "1h"}
+    )
+    res.status(200).json({token: token})
 })
 
 app.listen (3000, () => {
