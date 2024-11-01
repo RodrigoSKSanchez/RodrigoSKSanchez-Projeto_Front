@@ -1,6 +1,6 @@
 const protocolo = 'http://'
 const baseURL = 'localhost:3000'
-const filmesEndpoint = '/filmes'
+
 
 function exibirFilmes(filmes) {
     let tabela = document.querySelector('.filmes')
@@ -16,11 +16,13 @@ function exibirFilmes(filmes) {
 }
 
 async function obterFilmes() {
+    const filmesEndpoint = '/filmes'
     const URLcompleta = `${protocolo}${baseURL}${filmesEndpoint}`
     const filmes = (await axios.get(URLcompleta)).data
     exibirFilmes(filmes)
 }
 async function cadastrarFilme() {
+    const filmesEndpoint = '/filmes'
     const URLcompleta = `${protocolo}${baseURL}${filmesEndpoint}`
     let tituloInput = document.querySelector('#tituloInput')
     let sinopseInput = document.querySelector('#sinopseInput')
@@ -33,11 +35,33 @@ async function cadastrarFilme() {
         exibirFilmes(filmes)
     }
     else {
-        let alert = document.querySelector('.alert')
+        let alert = document.querySelector('.alert-filmes')
         alert.classList.add('show')
         alert.classList.remove('d-none')
         setTimeout(() => {
             alert.classList.remove('show')
+            alert.classList.add('d-none')
+        }, 2000)
+    }
+}
+
+async function cadastrarUsuario() {
+    // const cadastrarUsuarioEndpoint = '/signup'
+    let usuarioCadastroInput = document.querySelector('#usuarioCadastroInput')
+    let passwordCadastroInput = document.querySelector('#passwordCadastroInput')
+    let usuarioCadastro = usuarioCadastroInput.value
+    let passwordCadastro = passwordCadastroInput.value
+    if (usuarioCadastro && passwordCadastro) {
+        //vamos cadastrar
+
+    }
+    else{
+        let alert = document.querySelector('.alert-modal-cadastro')
+        alert.innerHTML = "Preencha todos os campos"
+        alert.classList.add('show', 'alert-danger')
+        alert.classList.remove('d-none')
+        setTimeout(() => {
+            alert.classList.remove('show', 'alert-danger')
             alert.classList.add('d-none')
         }, 2000)
     }
