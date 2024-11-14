@@ -42,6 +42,22 @@ async function obterFilmes() {
     const filmes = (await axios.get(URLcompleta)).data
     exibirFilmes(filmes)
 }
+
+async function prepararPagina() {
+    const loginLink = document.querySelector('#loginLink')
+    const cadastrarFilmeButton = document.querySelector('#cadastrarFilmeButton')
+    const token = localStorage.getItem("token")
+    if(token){
+        loginLink.innerHTML.disabled = 'logout'
+        cadastrarFilmeButton.disabled = false
+    }
+    else{
+        loginLink.innerHTML = 'login'
+        cadastrarFilmeButton.disabled = true
+    }
+    obterFilmes();
+}
+
 async function cadastrarFilme() {
     const filmesEndpoint = '/filmes'
     const URLcompleta = `${protocolo}${baseURL}${filmesEndpoint}`
@@ -54,12 +70,12 @@ async function cadastrarFilme() {
     if (titulo && sinopse) {
         const filmes = (await axios.post (URLcompleta, {titulo, sinopse})).data
         exibirAlerta('.alert-filme', "Filme cadastrado com sucesso!!!", ['show', 'alert-success'],
-                    ['d-none'], 2000)
+                    ['d-none', 'alert-danger'], 2000)
         exibirFilmes(filmes)
     }
     else {
         exibirAlerta('.alert-filme', "Preencha todos os campos", ['show', 'alert-danger'],
-                    ['d-none'], 2000)
+                    ['d-none', 'alert-success'], 2000)
     }
 }
 
@@ -80,19 +96,55 @@ async function cadastrarUsuario() {
                 {login: usuarioCadastro, password: passwordCadastro}
             )
             exibirAlerta('.alert-modal-cadastro',"Usuário cadastrado com sucesso!!!", 
-                         ['show', 'alert-success'], ['d-none'], 2000)
+                         ['show', 'alert-success'], ['d-none', 'alert-danger'], 2000)
             escondeModal('#modalCadastro', 2000)
         }
         catch(e) {
             passwordCadastroInput = ""
             exibirAlerta('.alert-modal-cadastro',"Não foi possível cadastrar usuário", 
-                         ['show', 'alert-danger'], ['d-none'], 2000)
+                         ['show', 'alert-danger'], ['d-none', 'alert-success'], 2000)
             escondeModal('#modalCadastro', 2000)
         }
 
     }
     else{
         exibirAlerta('.alert-modal-cadastro',"Preencha todos os campos", 
-                    ['show', 'alert-danger'], ['d-none'], 2000)
+                    ['show', 'alert-danger'], ['d-none','alert-success'], 2000)
+    }
+}
+
+const fazerLogin = async () => {
+    let usuarioLoginInput = document.querySelector('#usuarioLoginInput')
+    let passwordLoginInput = document.querySelector('#passwordLoginInput')
+    let usuarioLogin = usuarioLoginInput.value
+    let passwordLogin = passwordLoginInput.value
+    if (usuarioLogin && passwordLogin) {
+        try {
+            const loginEndpoint = '/login'
+            const URLcompleta = `${protocolo}${baseURL}${loginEndpoint}`
+            const response = await axios.post (
+                URLcompleta,
+                {login: usuarioLogin, password: passwordLogin}
+            )
+            // console.log (response.data)
+            localStorage.setItem("token", response.data)
+            usuarioLoginInput.value = ""
+            passwordLoginInput.value = ""
+            exibirAlerta('.alert-modal-login', "Login realizado com sucesso!!!",
+            ['show', 'alert-success'], ['d-none'], 2000)
+            ocultarModal('#modalLogin', 2000)
+            const cadastrarFilmeButton = document.querySelector('#cadastrarFilmeButton')
+            cadastrarFilmeButton.disabled = false
+            const loginLink = document.querySelector('#loginLink')
+            loginLink.innerHTML = "Logout"
+        }
+        catch (e) {
+            exibirAlerta('.alert-modal-login', 'Falha na autenticação!!!',
+                         ['show', 'alert-danger'], ['d-none'], 2000)
+        }
+    }
+    else {
+        exibirAlerta('.alert-modal-login', 'Preencha todos os campos!!!',
+                     ['show', 'alert-danger'], ['d-none'], 2000)
     }
 }
